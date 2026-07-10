@@ -80,20 +80,23 @@ export async function touchUser(userId) {
     .update({ last_active_at: new Date().toISOString() })
     .eq('id', userId);
 
-  await db.rpc('increment_message_count', { user_id: userId }).catch(() => {
-    // Fallback if RPC not available
-    db.from('users')
+  // Increment message_count — use direct update (no RPC needed)
+  try {
+    const { data } = await db
+      .from('users')
       .select('message_count')
       .eq('id', userId)
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          db.from('users')
-            .update({ message_count: (data.message_count || 0) + 1 })
-            .eq('id', userId);
-        }
-      });
-  });
+      .single();
+
+    if (data) {
+      await db
+        .from('users')
+        .update({ message_count: (data.message_count || 0) + 1 })
+        .eq('id', userId);
+    }
+  } catch {
+    // Non-critical, ignore
+  }
 }
 
 // ============================================================
