@@ -216,4 +216,17 @@
   - **Blog Table**: `overflow-x-auto` untuk mobile horizontal scroll
   - **Breakpoints**: `sm:` (640px), `md:` (768px), `lg:` (1024px)
 
+### 2026-07-12 — Audit & fix README.md
+- **Aksi**: diedit
+- **File**: README.md
+- **Detail**: Audit menyeluruh → fix semua findings:
+  - Hapus placeholder contacts (WA 6281234567890, hello@arazhar.dev)
+  - Fix "Also familiar with" → pindahkan tech yang sudah dipakai ke "Website Ini"
+  - Tambah admin features section (login, CRUD pages/blog/social)
+  - Specify Tailwind v4 di "Website Ini"
+  - Tambah social links lengkap (IG, TikTok, Telegram, Discord)
+  - Tambah Quick Start section (clone, install, dev, env vars table)
+  - Tambah libraries: TipTap, Framer Motion, shadcn/ui, Lucide
+  - Tambah License MIT
+
 ## Catatan
