@@ -79,4 +79,19 @@
 - **File**: app/admin/(dashboard)/layout.js, app/api/auth/[...nextauth]/route.js
 - **Detail**: Restruktur admin layout pakai route group `(dashboard)` agar login page tidak kena auth guard. Fix route handler NextAuth — revert pakai pola create instance di route handler langsung (import NextAuth + authOptions) karena pola exported handlers error di Vercel build-time.
 
+### 2026-07-12 — Ganti password jadi plain text (dev mode)
+- **Aksi**: diedit
+- **File**: prisma/seed.sql, src/lib/auth.js
+- **Detail**: Password disimpan plain text, bcrypt dihapus dari auth.js
+
+### 2026-07-12 — Tambah toggle show/hide password di login
+- **Aksi**: diedit
+- **File**: src/app/admin/login/page.js
+- **Detail**: Icon mata (Lucide Eye/EyeOff) untuk buka/tutup password
+
+### 2026-07-12 — Fix login gagal (ganti Base UI Input ke native input)
+- **Aksi**: diedit
+- **File**: src/app/admin/login/page.js, src/lib/auth.js
+- **Detail**: Ganti `@base-ui/react/input` ke native `<input>` + React state (bukan FormData) agar nilai input tidak hilang saat toggle type password
+
 ## Catatan
