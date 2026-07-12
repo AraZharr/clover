@@ -23,6 +23,11 @@
 - **SEO**: JSON-LD, Open Graph, dynamic sitemap, robots.txt, per-page metadata
 - **Auth**: Custom JWT (jose) — login/logout/me API routes
 
+## Social Media
+- Email, WhatsApp, Instagram, TikTok, Telegram, Discord
+- Tidak ada GitHub sebagai social contact (hanya untuk code repo)
+- Social links dikelola sendiri via admin dashboard
+
 ## Changelog
 
 ### 2026-07-12 — Inisialisasi project Next.js + Tailwind
