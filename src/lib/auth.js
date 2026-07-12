@@ -18,12 +18,19 @@ export const authOptions = {
 
         try {
           const user = await prisma.user.findUnique({ where: { email } })
-          if (!user) return null
+          if (!user) {
+            console.log('[auth] user not found:', email)
+            return null
+          }
 
-          if (password !== user.password) return null
+          if (password !== user.password) {
+            console.log('[auth] password mismatch for:', email)
+            return null
+          }
 
           return { id: user.id, email: user.email, name: user.name }
-        } catch {
+        } catch (err) {
+          console.error('[auth] error:', err)
           return null
         }
       },
