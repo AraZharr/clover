@@ -1,23 +1,22 @@
-import { prisma } from '@/lib/prisma'
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText, Newspaper } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export default function DashboardPage() {
+  const [stats, setStats] = useState({ pageCount: 0, articleCount: 0 })
+  const [error, setError] = useState(null)
 
-async function getStats() {
-  try {
-    const [pageCount, articleCount] = await Promise.all([
-      prisma.page.count(),
-      prisma.blogArticle.count(),
-    ])
-    return { pageCount, articleCount, error: null }
-  } catch {
-    return { pageCount: 0, articleCount: 0, error: 'Database not configured' }
-  }
-}
-
-export default async function DashboardPage() {
-  const { pageCount, articleCount, error } = await getStats()
+  useEffect(() => {
+    fetch('/api/admin/dashboard/stats')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) setError(data.error)
+        else setStats(data)
+      })
+      .catch(() => setError('Database not configured'))
+  }, [])
 
   return (
     <div>
@@ -25,7 +24,7 @@ export default async function DashboardPage() {
 
       {error && (
         <p className="text-sm text-amber-700 bg-amber-50 px-4 py-2 rounded mb-6">
-          ⚠️ {error}. Set DATABASE_URL di .env.local untuk mengaktifkan fitur database.
+          ⚠️ {error}. Configure D1 database untuk mengaktifkan fitur database.
         </p>
       )}
 
@@ -36,7 +35,7 @@ export default async function DashboardPage() {
             <CardTitle className="text-sm font-medium">Total Pages</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{pageCount}</p>
+            <p className="text-3xl font-bold">{stats.pageCount}</p>
           </CardContent>
         </Card>
 
@@ -46,7 +45,7 @@ export default async function DashboardPage() {
             <CardTitle className="text-sm font-medium">Total Articles</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{articleCount}</p>
+            <p className="text-3xl font-bold">{stats.articleCount}</p>
           </CardContent>
         </Card>
       </div>

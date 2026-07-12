@@ -2,9 +2,10 @@
 
 ## Info
 - **Project**: Landing page portofolio multi-halaman
-- **Tech Stack**: Next.js 14 (App Router), Tailwind CSS
-- **Deploy**: Vercel
-- **Domain**: https://clover-two-ashy.vercel.app
+- **Tech Stack**: Next.js 15 (App Router), Tailwind CSS, Cloudflare Workers + D1 + OpenNext
+- **Auth**: Custom JWT (jose) — no NextAuth
+- **Deploy**: Cloudflare Workers (opennextjs-cloudflare)
+- **Domain**: https://clover-two-ashy.vercel.app (legacy Vercel — migrating to CF)
 
 ## Pages
 - `/` — Hero, Projects, Contact
@@ -124,5 +125,23 @@
   - 16 skills (monetization, infrastructure, content-strategy, telegram-bots, data-transformation, api-integration, ai-providers, document-generation, frontend, web3, security-audit, batch-operations, nft-minter, self-audit, strategy, debug)
   - Core identity, rules R1-R10, routing dari SOUL.md + IDENTITY.md + AGENTS.md
   - Di-load via `skill` tool on-demand
+
+### 2026-07-12 — Migrasi Vercel+Supabase+Prisma+NextAuth → Cloudflare Workers+D1+OpenNext+JWT
+- **Aksi**: diedit/dibuat
+- **File**: next.config.mjs, open-next.config.ts, wrangler.jsonc, migrations/0001_init.sql, src/lib/d1.js, src/lib/auth-cf.js, src/app/api/auth/login/route.js, src/app/api/auth/logout/route.js, src/app/api/auth/me/route.js, src/app/api/admin/dashboard/stats/route.js
+- **Detail**: 
+  - Hapus Prisma/Supabase/NextAuth → ganti Cloudflare D1 + custom JWT (jose)
+  - `d1.js`: CRUD functions via `@opennextjs/cloudflare` getCloudflareContext
+  - `auth-cf.js`: JWT sign/verify + getSession via cookie
+  - API routes migrasi: login/logout/me, admin dashboard stats
+  - Hapus next.config.js → next.config.mjs (OpenNext dev init)
+  - OpenNext + Wrangler config untuk CF Workers deployment
+  - Migration SQL untuk D1 (User, Page, BlogArticle tables + indexes)
+  - Hapus .env vars Supabase/NextAuth legacy
+
+### 2026-07-12 — Fix Next.js 15 async params di route handlers & pages
+- **Aksi**: diedit
+- **File**: src/app/api/admin/pages/[id]/route.js, src/app/api/admin/blog/[id]/route.js, src/app/api/blog/[slug]/route.js, src/app/blog/[slug]/page.js
+- **Detail**: Next.js 15 bikin `params` jadi Promise — semua akses `params.id`/`params.slug` harus `await` dulu
 
 ## Catatan

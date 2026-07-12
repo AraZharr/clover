@@ -1,16 +1,12 @@
 import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
+import * as d1 from '@/lib/d1'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Blog — AraZharr' }
 
 async function getArticles() {
   try {
-    return await prisma.blogArticle.findMany({
-      where: { published: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, slug: true, excerpt: true, createdAt: true },
-    })
+    return await d1.getPublishedArticles()
   } catch {
     return []
   }

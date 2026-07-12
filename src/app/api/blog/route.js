@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import * as d1 from '@/lib/d1'
 
+export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const articles = await prisma.blogArticle.findMany({
-      where: { published: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, slug: true, excerpt: true, createdAt: true, image: true },
-    })
+    const articles = await d1.getPublishedArticles()
     return NextResponse.json(articles)
   } catch {
     return NextResponse.json([])

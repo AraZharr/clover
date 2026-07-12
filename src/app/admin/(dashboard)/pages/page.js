@@ -1,5 +1,7 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -11,18 +13,15 @@ import {
 } from '@/components/ui/table'
 import { Plus, Pencil } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export default function AdminPagesPage() {
+  const [pages, setPages] = useState([])
 
-async function getPages() {
-  try {
-    return await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } })
-  } catch {
-    return []
-  }
-}
-
-export default async function AdminPagesPage() {
-  const pages = await getPages()
+  useEffect(() => {
+    fetch('/api/admin/pages')
+      .then((r) => r.json())
+      .then(setPages)
+      .catch(() => setPages([]))
+  }, [])
 
   return (
     <div>

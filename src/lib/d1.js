@@ -1,0 +1,124 @@
+import { getCloudflareContext } from '@opennextjs/cloudflare'
+
+function getDB() {
+  const { env } = getCloudflareContext()
+  return env.DB
+}
+
+function safeJson(val) {
+  if (!val) return {}
+  if (typeof val === 'object') return val
+  try { return JSON.parse(val) } catch { return {} }
+}
+
+const toPage = (r) => r ? { ...r, published: !!r.published, content: safeJson(r.content) } : null
+const toArticle = (r) => r ? { ...r, published: !!r.published, content: safeJson(r.content) } : null
+
+export async function findUserByEmail(email) {
+  const db = getDB()
+  return db.prepare('SELECT * FROM User WHERE email = ?').bind(email).first()
+}
+
+export async function getPages() {
+  const db = getDB()
+  const { results } = await db.prepare('SELECT * FROM Page ORDER BY updatedAt DESC').all()
+  return results.map(toPage)
+}
+
+export async function getPageById(id) {
+  const db = getDB()
+  return toPage(await db.prepare('SELECT * FROM Page WHERE id = ?').bind(id).first())
+}
+
+export async function createPage({ slug, title, content }) {
+  const db = getDB()
+  const id = crypto.randomUUID()
+  await db.prepare(
+    "INSERT INTO Page (id, slug, title, content, published, updatedAt) VALUES (?, ?, ?, ?, 1, datetime('now'))"
+  ).bind(id, slug, title, JSON.stringify(content ?? {})).run()
+  return getPageById(id)
+}
+
+export async function updatePage(id, data) {
+  const db = getDB()
+  const sets = []
+  const vals = []
+  for (const [k, v] of Object.entries(data)) {
+    if (k === 'content') { sets.push('content = ?'); vals.push(JSON.stringify(v)) }
+    else if (k === 'published') { sets.push('published = ?'); vals.push(v ? 1 : 0) }
+    else if (k === 'slug' || k === 'title') { sets.push(`${k} = ?`); vals.push(v) }
+  }
+  if (!sets.length) return getPageById(id)
+  sets.push("updatedAt = datetime('now')")
+  vals.push(id)
+  await db.prepare(`UPDATE Page SET ${sets.join(', ')} WHERE id = ?`).bind(...vals).run()
+  return getPageById(id)
+}
+
+export async function deletePage(id) {
+  const db = getDB()
+  await db.prepare('DELETE FROM Page WHERE id = ?').bind(id).run()
+}
+
+export async function getBlogArticles() {
+  const db = getDB()
+  const { results } = await db.prepare('SELECT * FROM BlogArticle ORDER BY createdAt DESC').all()
+  return results.map(toArticle)
+}
+
+export async function getPublishedArticles() {
+  const db = getDB()
+  const { results } = await db.prepare(
+    "SELECT id, title, slug, excerpt, createdAt, image FROM BlogArticle WHERE published = 1 ORDER BY createdAt DESC"
+  ).all()
+  return results
+}
+
+export async function getArticleBySlug(slug) {
+  const db = getDB()
+  return toArticle(await db.prepare('SELECT * FROM BlogArticle WHERE slug = ? AND published = 1').bind(slug).first())
+}
+
+export async function getArticleById(id) {
+  const db = getDB()
+  return toArticle(await db.prepare('SELECT * FROM BlogArticle WHERE id = ?').bind(id).first())
+}
+
+export async function createArticle({ slug, title, excerpt, content, published, image }) {
+  const db = getDB()
+  const id = crypto.randomUUID()
+  await db.prepare(
+    `INSERT INTO BlogArticle (id, slug, title, excerpt, content, published, image, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+  ).bind(id, slug, title, excerpt ?? null, JSON.stringify(content ?? {}), published ? 1 : 0, image ?? null).run()
+  return getArticleById(id)
+}
+
+export async function updateArticle(id, data) {
+  const db = getDB()
+  const sets = []
+  const vals = []
+  for (const [k, v] of Object.entries(data)) {
+    if (k === 'content') { sets.push('content = ?'); vals.push(JSON.stringify(v)) }
+    else if (k === 'published') { sets.push('published = ?'); vals.push(v ? 1 : 0) }
+    else if (['slug', 'title', 'excerpt', 'image'].includes(k)) { sets.push(`${k} = ?`); vals.push(v ?? null) }
+  }
+  if (!sets.length) return getArticleById(id)
+  sets.push("updatedAt = datetime('now')")
+  vals.push(id)
+  await db.prepare(`UPDATE BlogArticle SET ${sets.join(', ')} WHERE id = ?`).bind(...vals).run()
+  return getArticleById(id)
+}
+
+export async function deleteArticle(id) {
+  const db = getDB()
+  await db.prepare('DELETE FROM BlogArticle WHERE id = ?').bind(id).run()
+}
+
+export async function getCounts() {
+  const db = getDB()
+  const { results } = await db.prepare(
+    "SELECT (SELECT COUNT(*) FROM Page) as pageCount, (SELECT COUNT(*) FROM BlogArticle) as articleCount"
+  ).all()
+  return results[0] || { pageCount: 0, articleCount: 0 }
+}

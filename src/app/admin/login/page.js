@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,31 +18,24 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    let result
     try {
-      result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       })
-    } catch (err) {
-      setError('Gagal terhubung ke server. Coba lagi.')
-      setLoading(false)
-      return
-    }
 
-    setLoading(false)
+      const data = await res.json()
 
-    if (result?.error) {
-      if (result.url?.includes('csrf=true')) {
-        setError('Sesi kadaluarsa. Refresh halaman dan coba lagi.')
-      } else if (result.error === 'CredentialsSignin') {
-        setError('Email atau password salah')
+      if (!res.ok) {
+        setError(data.error || 'Email atau password salah')
       } else {
-        setError('Terjadi kesalahan. Coba lagi nanti.')
+        router.push('/admin/dashboard')
       }
-    } else {
-      router.push('/admin/dashboard')
+    } catch {
+      setError('Gagal terhubung ke server. Coba lagi.')
+    } finally {
+      setLoading(false)
     }
   }
 

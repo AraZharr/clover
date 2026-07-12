@@ -1,11 +1,11 @@
-import { getServerSession } from '@/lib/auth-helpers'
+import { getSession } from '@/lib/auth-cf'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/admin/Sidebar'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminLayout({ children }) {
-  const session = await getServerSession()
+  const session = await getSession()
 
   if (!session) {
     redirect('/admin/login')

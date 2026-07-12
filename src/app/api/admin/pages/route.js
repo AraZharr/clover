@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from '@/lib/auth-helpers'
-import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth-cf'
+import * as d1 from '@/lib/d1'
 
-async function getSession() {
-  return getServerSession()
-}
+export const runtime = 'edge'
 
 export async function GET() {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } })
+  const pages = await d1.getPages()
   return NextResponse.json(pages)
 }
 
@@ -19,11 +17,7 @@ export async function POST(req) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { slug, title, content } = await req.json()
-
-  const page = await prisma.page.create({
-    data: { slug, title, content: content ?? {} },
-  })
-
+  const page = await d1.createPage({ slug, title, content })
   return NextResponse.json(page)
 }
 
@@ -32,11 +26,6 @@ export async function PUT(req) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id, slug, title, content, published } = await req.json()
-
-  const page = await prisma.page.update({
-    where: { id },
-    data: { slug, title, content, published },
-  })
-
+  const page = await d1.updatePage(id, { slug, title, content, published })
   return NextResponse.json(page)
 }

@@ -1,18 +1,14 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from '@/lib/auth-helpers'
-import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/auth-cf'
+import * as d1 from '@/lib/d1'
 
-async function getSession() {
-  return getServerSession()
-}
+export const runtime = 'edge'
 
 export async function GET() {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const articles = await prisma.blogArticle.findMany({
-    orderBy: { createdAt: 'desc' },
-  })
+  const articles = await d1.getBlogArticles()
   return NextResponse.json(articles)
 }
 
@@ -21,10 +17,6 @@ export async function POST(req) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { slug, title, excerpt, content, published, image } = await req.json()
-
-  const article = await prisma.blogArticle.create({
-    data: { slug, title, excerpt, content, published: published ?? false, image },
-  })
-
+  const article = await d1.createArticle({ slug, title, excerpt, content, published, image })
   return NextResponse.json(article)
 }

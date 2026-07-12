@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import * as d1 from '@/lib/d1'
 import { notFound } from 'next/navigation'
 import TipTapRenderer from '@/components/TipTapRenderer'
 
@@ -6,22 +6,22 @@ export const dynamic = 'force-dynamic'
 
 async function getArticle(slug) {
   try {
-    return await prisma.blogArticle.findUnique({
-      where: { slug, published: true },
-    })
+    return await d1.getArticleBySlug(slug)
   } catch {
     return null
   }
 }
 
 export async function generateMetadata({ params }) {
-  const article = await getArticle(params.slug)
+  const { slug } = await params
+  const article = await getArticle(slug)
   if (!article) return { title: 'Not Found' }
   return { title: `${article.title} — AraZharr` }
 }
 
 export default async function ArticlePage({ params }) {
-  const article = await getArticle(params.slug)
+  const { slug } = await params
+  const article = await getArticle(slug)
 
   if (!article) notFound()
 
