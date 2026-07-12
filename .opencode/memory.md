@@ -77,6 +77,6 @@
 ### 2026-07-12 — Fix redirect loop /admin/login
 - **Aksi**: diedit
 - **File**: app/admin/(dashboard)/layout.js, app/api/auth/[...nextauth]/route.js
-- **Detail**: Restruktur admin layout pakai route group `(dashboard)` agar login page tidak kena auth guard. Fix route handler NextAuth pakai exported handlers.
+- **Detail**: Restruktur admin layout pakai route group `(dashboard)` agar login page tidak kena auth guard. Fix route handler NextAuth — revert pakai pola create instance di route handler langsung (import NextAuth + authOptions) karena pola exported handlers error di Vercel build-time.
 
 ## Catatan
