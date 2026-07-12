@@ -94,4 +94,16 @@
 - **File**: src/app/admin/login/page.js, src/lib/auth.js
 - **Detail**: Ganti `@base-ui/react/input` ke native `<input>` + React state (bukan FormData) agar nilai input tidak hilang saat toggle type password
 
+### 2026-07-12 — Auth audit & fix 401 (NextAuth + env + error handling)
+- **Aksi**: diedit/dibuat
+- **File**: src/lib/auth.js, src/lib/auth-helpers.js, src/app/admin/(dashboard)/layout.js, src/app/api/auth/[...nextauth]/route.js, src/app/admin/login/page.js, .env, .env.local
+- **Detail**: 
+  - Hapus module-level `NextAuth()` dari auth.js (mencegah dual-instance & build-time error)
+  - Buat `auth-helpers.js` untuk lazy singleton `auth()` (runtime-only, tidak trigger build)
+  - Layout admin pakai `auth-helpers` bukan langsung dari auth.js
+  - `.env` diisi value real (DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL)
+  - `.env.local` dikosongkan (hanya komentar) agar tidak override .env
+  - Login page tambah error handling untuk `CredentialsSignin` vs error lain
+  - Console.error di authorize() untuk diagnosa di Vercel function logs
+
 ## Catatan

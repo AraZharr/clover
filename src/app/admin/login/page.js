@@ -5,8 +5,6 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,16 +19,27 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    })
+    let result
+    try {
+      result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+    } catch (err) {
+      setError('Gagal terhubung ke server. Coba lagi.')
+      setLoading(false)
+      return
+    }
 
     setLoading(false)
 
     if (result?.error) {
-      setError('Email atau password salah')
+      if (result.error === 'CredentialsSignin') {
+        setError('Email atau password salah')
+      } else {
+        setError('Terjadi kesalahan. Coba lagi nanti.')
+      }
     } else {
       router.push('/admin/dashboard')
     }
@@ -49,19 +58,19 @@ export default function LoginPage() {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <label htmlFor="email" className="text-sm font-medium">Email</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
+            className="h-8 w-full rounded-lg border border-gray-300 bg-transparent px-2.5 py-1 text-base outline-none focus:border-black transition-colors md:text-sm"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <label htmlFor="password" className="text-sm font-medium">Password</label>
           <div className="relative">
             <input
               id="password"
@@ -69,7 +78,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm pr-9"
+              className="h-8 w-full rounded-lg border border-gray-300 bg-transparent px-2.5 py-1 text-base outline-none focus:border-black transition-colors md:text-sm pr-9"
             />
             <button
               type="button"
