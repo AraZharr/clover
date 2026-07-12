@@ -35,7 +35,7 @@ Terbiasa bekerja dengan **JavaScript**, **Next.js**, dan ekosistem open source. 
 | Tailwind CSS | 85% | Utility-first styling (v4) |
 | Node.js | 75% | Backend, bot, API |
 | Python | 60% | Scripting, automation |
-| Supabase / Firebase | 65% | BaaS, database, auth |
+| Cloudflare Workers + D1 | 70% | Edge deployment, SQLite at the edge |
 
 **Core stack**: JavaScript fullstack — dari UI sampai backend, dari bot sampai automation.
 
@@ -64,7 +64,7 @@ Bot Telegram multi-provider AI dengan memori dan command routing.
 
 | Aspek | Detail |
 |-------|--------|
-| **Tech** | Node.js, Gemini AI, Supabase |
+| **Tech** | Node.js, Gemini AI |
 | **Fitur** | Multi-provider AI, memory system, command routing |
 | **Use case** | AI assistant di Telegram dengan percakapan kontekstual |
 
@@ -177,11 +177,11 @@ clover/
 │   │   └── ui/                # shadcn/ui components
 │   └── lib/                   # Utilities
 │       ├── d1.js              # Cloudflare D1 CRUD
-│       ├── auth-cf.js         # JWT auth helpers
-│       └── auth-helpers.js    # Lazy auth singleton
+│       └── auth-cf.js         # JWT auth helpers
 ├── migrations/                # D1 SQL migrations
 │   ├── 0001_init.sql          # Users, Pages, BlogArticle tables
-│   └── 0002_social_link.sql   # SocialLink table
+│   ├── 0002_social_link.sql   # SocialLink table
+│   └── 0003_skill_project.sql # Skill, Project tables
 ├── next.config.mjs            # Next.js config
 ├── open-next.config.ts        # OpenNext (CF Workers) config
 ├── wrangler.jsonc             # Cloudflare Workers config

@@ -259,4 +259,16 @@
   - **About fallback**: Jika page 'about' belum ada di DB, tampilkan text hardcoded sebagai default
   - Hapus hardcoded projects (Clover Bot, Project Lainnya) — semua dari admin sekarang
 
+### 2026-07-12 — Cleanup file sampah sisa migrasi
+- **Aksi**: hapus/diedit
+- **File**: .github/workflows/keepalive.yml, src/prisma/, src/app/api/chat/route.js, README.md, components.json
+- **Detail**:
+  - Hapus `.github/workflows/keepalive.yml` — workflow Supabase keepalive sudah tidak dipakai
+  - Hapus `src/prisma/` — folder kosong sisa Prisma
+  - Update chatbot knowledge base — hapus hardcoded skills/projects (sekarang dari DB), hapus referensi Supabase
+  - Fix README project tree — hapus `auth-helpers.js` yang sudah tidak ada
+  - Fix components.json — hapus referensi `tailwind.config.js` (Tailwind v4 pakai CSS)
+  - Update README: skill `Supabase / Firebase` → `Cloudflare Workers + D1`, Clover Bot tech hapus Supabase
+  - Tambah `0003_skill_project.sql` ke project tree di README
+
 ## Catatan

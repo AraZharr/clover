@@ -18,16 +18,12 @@ Filosofi: solusi yang fungsional, efisien, dan user-friendly.
 Terbiasa dengan JavaScript, Next.js, dan ekosistem open source.
 
 == SKILLS ==
-- JavaScript / TypeScript (85%)
-- React / Next.js (80%)
-- Tailwind CSS (85%)
-- Node.js (75%)
-- Python (60%)
-- Supabase / Firebase (65%)
+Skills dan levelnya bisa dilihat langsung di halaman Skills website.
+Tech stack utama: JavaScript, Next.js, Tailwind CSS, Node.js, Cloudflare Workers + D1.
 
 == PROJECTS ==
-1. Clover Bot — Bot Telegram multi-provider AI dengan memori dan command routing. Tech: Node.js, Gemini, Supabase.
-2. Project lainnya — Berbagai eksperimen digital yang sedang dikembangkan. Tech: Next.js, Tailwind.
+Project bisa dilihat langsung di halaman Projects website.
+Semua project dikelola via admin dashboard.
 
 == LAYANAN ==
 - Pengembangan web (landing page, portfolio, web app)
@@ -37,8 +33,7 @@ Terbiasa dengan JavaScript, Next.js, dan ekosistem open source.
 
 == KONTAK ==
 - GitHub: github.com/AraZhar
-- Email: hello@arazhar.dev
-- WhatsApp: tersedia via tombol di chat widget
+- Social media lainnya tersedia di website (Instagram, TikTok, Telegram, Discord, dll)
 `
 
 const SYSTEM_PROMPT = `Kamu adalah customer service AI milik AraZhar.
