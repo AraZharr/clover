@@ -64,4 +64,14 @@
 - **File**: .env.example, scripts/seed.js
 - **Detail**: Template env variables + seed script untuk insert admin user
 
+### 2026-07-12 — Buat SQL schema file
+- **Aksi**: dibuat
+- **File**: prisma/schema.sql
+- **Detail**: SQL schema dari Prisma models (User, Page, BlogArticle) untuk PostgreSQL, di-commit & push ke repo
+
+### 2026-07-12 — Buat seed SQL admin user
+- **Aksi**: dibuat
+- **File**: prisma/seed.sql
+- **Detail**: Seed admin user (admin@gdsi.my.id) via SQL untuk Supabase SQL Editor
+
 ## Catatan
