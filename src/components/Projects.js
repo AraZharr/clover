@@ -27,7 +27,7 @@ export default function Projects() {
       >
         Projects
       </motion.h2>
-      <div className="grid sm:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map(({ title, desc, tech }, i) => (
           <motion.div
             key={title}

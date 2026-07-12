@@ -205,4 +205,15 @@
 - **File**: SETUP.md
 - **Detail**: 16 langkah dari install Node.js sampai live — clone, install, wrangler login, D1 create, migrasi, seed admin, .env, deploy, env vars di CF dashboard, custom domain, troubleshooting, ringkasan perintah
 
+### 2026-07-12 — Fix responsivitas semua device (mobile/tablet/desktop)
+- **Aksi**: diedit
+- **File**: src/components/admin/Sidebar.js, src/app/admin/(dashboard)/layout.js, src/components/Hero.js, src/components/Projects.js, src/app/admin/(dashboard)/blog/page.js
+- **Detail**:
+  - **Sidebar**: Mobile hamburger menu (☰/✕), overlay click-to-close, fixed position mobile, `lg:` sticky desktop
+  - **Admin Layout**: Responsive padding (`p-4 lg:p-8`), top padding untuk mobile header
+  - **Hero**: Font responsive `text-4xl sm:text-5md:text-6xl lg:text-7xl`
+  - **Projects**: Grid responsive `sm:grid-cols-2 lg:grid-cols-3`
+  - **Blog Table**: `overflow-x-auto` untuk mobile horizontal scroll
+  - **Breakpoints**: `sm:` (640px), `md:` (768px), `lg:` (1024px)
+
 ## Catatan

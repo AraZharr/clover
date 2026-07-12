@@ -9,7 +9,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-5xl sm:text-6xl font-bold mb-4"
+        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4"
       >
         AraZhar
       </motion.h1>
