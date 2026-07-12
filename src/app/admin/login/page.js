@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 export default function LoginPage() {
   const router = useRouter()
@@ -11,24 +13,41 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [token, setToken] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return
+    const script = document.createElement('script')
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
+    script.async = true
+    document.body.appendChild(script)
+    window.onTurnstileCallback = (t) => setToken(t)
+    return () => { window.onTurnstileCallback = undefined }
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    if (TURNSTILE_SITE_KEY && !token) {
+      setError('Silakan verifikasi CAPTCHA terlebih dahulu')
+      return
+    }
     setLoading(true)
 
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, token }),
       })
 
       const data = await res.json()
 
       if (!res.ok) {
         setError(data.error || 'Email atau password salah')
+        setToken('')
+        if (window.turnstile) window.turnstile.reset()
       } else {
         router.push('/admin/dashboard')
       }
@@ -84,6 +103,10 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
+
+        {TURNSTILE_SITE_KEY && (
+          <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-callback="onTurnstileCallback"></div>
+        )}
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? 'Memproses...' : 'Login'}

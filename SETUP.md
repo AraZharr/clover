@@ -134,7 +134,11 @@ wrangler d1 execute clover-db --remote --file=./migrations/0002_social_link.sql
 wrangler d1 execute clover-db --remote --file=./migrations/0003_skill_project.sql
 ```
 
-Ini akan membuat tabel: User, Page, BlogArticle, SocialLink, Skill, Project.
+```bash
+wrangler d1 execute clover-db --remote --file=./migrations/0004_ratelimit.sql
+```
+
+Ini akan membuat tabel: User, Page, BlogArticle, SocialLink, Skill, Project, RateLimit.
 
 ---
 
@@ -367,6 +371,37 @@ Kalau belum punya domain, website tetap bisa diakses via URL Cloudflare:
 
 ---
 
+## STEP 15.5: Keamanan Gratis (Cloudflare)
+
+Semua fitur di bawah **gratis** di Cloudflare Free plan:
+
+### A. Cloudflare Turnstile (anti-bot di login)
+
+1. Buka https://dash.cloudflare.com → **Turnstile**
+2. Klik **Add Site** → isi nama, pilih domain
+3. Copy **Site Key** dan **Secret Key**
+4. Set di Cloudflare (Workers → Settings → Environment variables):
+   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` = (Site Key) — Plaintext
+   - `TURNSTILE_SECRET_KEY` = (Secret Key) — Encrypted
+5. Deploy ulang: `npm run deploy`
+
+> Kalau belum di-set, login tetap jalan (Turnstile di-skip). Widget baru muncul setelah env var diisi.
+
+### B. Rate Limiting Rules (dashboard)
+
+1. **Security** → **WAF** → **Rate Limiting Rules**
+2. Buat rule untuk `/api/chat`: block kalau >10 req/menit/IP
+3. Buat rule untuk `/api/auth/login`: block kalau >5 req/menit/IP
+
+### C. Bot Fight Mode
+
+1. **Security** → **Settings** → **Bot Fight Mode**: ON
+2. **Security Level**: Medium
+
+> Note: `/api/chat` juga sudah punya in-app rate limit (10 req/60 detik per IP via D1) sebagai backup.
+
+---
+
 ## Troubleshooting
 
 ### "Database not configured" di Dashboard
@@ -421,6 +456,7 @@ wrangler d1 create clover-db
 wrangler d1 execute clover-db --remote --file=./migrations/0001_init.sql
 wrangler d1 execute clover-db --remote --file=./migrations/0002_social_link.sql
 wrangler d1 execute clover-db --remote --file=./migrations/0003_skill_project.sql
+wrangler d1 execute clover-db --remote --file=./migrations/0004_ratelimit.sql
 
 # 6. Buat admin user
 wrangler d1 execute clover-db --remote --command="INSERT INTO User (id, email, password, name) VALUES (lower(hex(randomblob(16))), 'admin@arazhar.dev', 'password123', 'AraZhar')"

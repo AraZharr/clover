@@ -271,4 +271,17 @@
   - Update README: skill `Supabase / Firebase` → `Cloudflare Workers + D1`, Clover Bot tech hapus Supabase
   - Tambah `0003_skill_project.sql` ke project tree di README
 
+### 2026-07-12 — Security gratisan: Turnstile + rate limit /api/chat
+- **Aksi**: dibuat/diedit
+- **File**: migrations/0004_ratelimit.sql, src/lib/d1.js, src/app/api/chat/route.js, src/app/admin/login/page.js, src/app/api/auth/login/route.js, .env, .env.example, SETUP.md, README.md
+- **Detail**:
+  - **Migration**: Tabel `RateLimit` (key, count, reset_at) untuk in-app rate limiting
+  - **d1.js**: `checkRateLimit(key, limit, windowSeconds)` — sliding window counter per IP
+  - **/api/chat**: Rate limit 10 req/60 detik per IP via D1 (fail-open kalau D1 error), return 429 + Retry-After
+  - **Turnstile**: Widget di login page (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), verify token di `/api/auth/login` via `challenges.cloudflare.com/turnstile/v0/siteverify`
+  - **Graceful**: Turnstile di-skip kalau `TURNSTILE_SECRET_KEY` belum di-set (lokal dev aman)
+  - **.env**: tambah `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`
+  - **SETUP.md**: STEP 15.5 Keamanan Gratis (Turnstile, Rate Limiting Rules, Bot Fight Mode)
+  - **README.md**: tambah Security section (Turnstile, rate limit, Bot Fight Mode, DDoS, JWT)
+
 ## Catatan

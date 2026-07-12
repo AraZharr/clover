@@ -268,3 +268,32 @@ export async function deleteProject(id) {
   const db = getDB()
   await db.prepare('DELETE FROM Project WHERE id = ?').bind(id).run()
 }
+
+// === Rate Limit ===
+
+export async function checkRateLimit(key, limit, windowSeconds) {
+  const db = getDB()
+  const now = Date.now()
+  const resetAt = new Date(now + windowSeconds * 1000).toISOString()
+
+  const row = await db.prepare('SELECT * FROM RateLimit WHERE key = ?').bind(key).first()
+
+  if (!row) {
+    await db.prepare('INSERT INTO RateLimit (key, count, reset_at) VALUES (?, 1, ?)').bind(key, resetAt).run()
+    return { allowed: true, remaining: limit - 1 }
+  }
+
+  const resetTime = new Date(row.reset_at).getTime()
+
+  if (now > resetTime) {
+    await db.prepare('UPDATE RateLimit SET count = 1, reset_at = ? WHERE key = ?').bind(resetAt, key).run()
+    return { allowed: true, remaining: limit - 1 }
+  }
+
+  if (row.count >= limit) {
+    return { allowed: false, remaining: 0, retryAfter: Math.ceil((resetTime - now) / 1000) }
+  }
+
+  await db.prepare('UPDATE RateLimit SET count = count + 1 WHERE key = ?').bind(key).run()
+  return { allowed: true, remaining: limit - row.count - 1 }
+}

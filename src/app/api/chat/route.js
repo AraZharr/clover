@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as d1 from '@/lib/d1'
 
 export const runtime = 'edge'
 
@@ -120,6 +121,23 @@ export async function POST(req) {
     const { messages } = await req.json()
     if (!messages?.length) {
       return NextResponse.json({ error: 'No messages' }, { status: 400 })
+    }
+
+    // Rate limit: 10 requests / 60 seconds per IP (gratis, pakai D1)
+    try {
+      const ip =
+        req.headers.get('cf-connecting-ip') ||
+        req.headers.get('x-forwarded-for') ||
+        'unknown'
+      const rl = await d1.checkRateLimit(`chat:${ip}`, 10, 60)
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { error: 'Terlalu banyak permintaan. Coba lagi dalam ' + rl.retryAfter + ' detik.' },
+          { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+        )
+      }
+    } catch {
+      // fail open — jangan blokir chat kalau D1 error
     }
 
     let reply = ''

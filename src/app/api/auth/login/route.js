@@ -6,10 +6,26 @@ export const runtime = 'edge'
 
 export async function POST(req) {
   try {
-    const { email, password } = await req.json()
+    const { email, password, token } = await req.json()
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email dan password wajib diisi' }, { status: 400 })
+    }
+
+    // Turnstile verification (gratis, skip kalau belum dikonfigurasi)
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      if (!token) {
+        return NextResponse.json({ error: 'CAPTCHA wajib diisi' }, { status: 400 })
+      }
+      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `secret=${encodeURIComponent(process.env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(token)}`,
+      })
+      const verifyData = await verifyRes.json()
+      if (!verifyData.success) {
+        return NextResponse.json({ error: 'Verifikasi CAPTCHA gagal' }, { status: 401 })
+      }
     }
 
     const user = await d1.findUserByEmail(email)

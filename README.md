@@ -118,6 +118,17 @@ Floating chat widget yang muncul di pojok kanan bawah:
 - **Per-page metadata** — Title, description, keywords per halaman
 - **Edge deployment** — Cloudflare Workers untuk performa global
 
+### Security (Gratis)
+
+Semua proteksi di bawah **gratis** di Cloudflare Free plan:
+
+- **Cloudflare Turnstile** — Anti-bot CAPTCHA di halaman login admin
+- **Rate Limit `/api/chat`** — 10 req/60 detik per IP (via D1) + Rate Limiting Rule di dashboard, cegah spam bot boros AI API
+- **Rate Limit `/api/auth/login`** — cegah brute force password
+- **Bot Fight Mode** — tantang bot otomatis
+- **DDoS Protection** — otomatis always-on
+- **JWT Auth** — cookie `httpOnly`, `secure`, expire 24 jam
+
 ### Responsive Design
 
 Desain responsif untuk semua device:
@@ -181,7 +192,8 @@ clover/
 ├── migrations/                # D1 SQL migrations
 │   ├── 0001_init.sql          # Users, Pages, BlogArticle tables
 │   ├── 0002_social_link.sql   # SocialLink table
-│   └── 0003_skill_project.sql # Skill, Project tables
+│   ├── 0003_skill_project.sql # Skill, Project tables
+│   └── 0004_ratelimit.sql      # RateLimit table (chat rate limit)
 ├── next.config.mjs            # Next.js config
 ├── open-next.config.ts        # OpenNext (CF Workers) config
 ├── wrangler.jsonc             # Cloudflare Workers config
