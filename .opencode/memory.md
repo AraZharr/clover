@@ -74,4 +74,9 @@
 - **File**: prisma/seed.sql
 - **Detail**: Seed admin user (admin@gdsi.my.id) via SQL untuk Supabase SQL Editor
 
+### 2026-07-12 — Fix redirect loop /admin/login
+- **Aksi**: diedit
+- **File**: app/admin/(dashboard)/layout.js, app/api/auth/[...nextauth]/route.js
+- **Detail**: Restruktur admin layout pakai route group `(dashboard)` agar login page tidak kena auth guard. Fix route handler NextAuth pakai exported handlers.
+
 ## Catatan
