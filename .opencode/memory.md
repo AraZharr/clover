@@ -284,4 +284,16 @@
   - **SETUP.md**: STEP 15.5 Keamanan Gratis (Turnstile, Rate Limiting Rules, Bot Fight Mode)
   - **README.md**: tambah Security section (Turnstile, rate limit, Bot Fight Mode, DDoS, JWT)
 
+### 2026-07-12 — Buat SETUP.pdf (dari SETUP.md)
+- **Aksi**: dibuat
+- **File**: SETUP.pdf, scripts/gen_setup_pdf.py
+- **Detail**: Generate PDF rapi dari SETUP.md pakai reportlab (v5.0.0):
+  - Cover page, Daftar Isi (TOC dengan page numbers via multiBuild)
+  - Setiap STEP jadi section berjudul dengan background bar
+  - Code block: XPreformatted + gray background + Courier
+  - Table: header dark + alternating row + grid
+  - Blockquote (`>`): note box biru dengan left border
+  - Bullet/numbered list rapi (fix nested dash artifact)
+  - 12 halaman, A4
+
 ## Catatan
