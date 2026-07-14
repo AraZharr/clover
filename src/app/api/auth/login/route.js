@@ -6,7 +6,7 @@ export const runtime = 'edge'
 
 export async function POST(req) {
   try {
-    const { email, password, token } = await req.json()
+    const { email, password, turnstileToken } = await req.json()
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email dan password wajib diisi' }, { status: 400 })
@@ -14,13 +14,13 @@ export async function POST(req) {
 
     // Turnstile verification (gratis, skip kalau belum dikonfigurasi)
     if (process.env.TURNSTILE_SECRET_KEY) {
-      if (!token) {
+      if (!turnstileToken) {
         return NextResponse.json({ error: 'CAPTCHA wajib diisi' }, { status: 400 })
       }
       const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `secret=${encodeURIComponent(process.env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(token)}`,
+        body: `secret=${encodeURIComponent(process.env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(turnstileToken)}`,
       })
       const verifyData = await verifyRes.json()
       if (!verifyData.success) {
@@ -33,10 +33,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Email atau password salah' }, { status: 401 })
     }
 
-    const token = await createSessionToken({ id: user.id, email: user.email, name: user.name })
+    const sessionToken = await createSessionToken({ id: user.id, email: user.email, name: user.name })
 
     const res = NextResponse.json({ success: true })
-    res.cookies.set('session', token, {
+    res.cookies.set('session', sessionToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
