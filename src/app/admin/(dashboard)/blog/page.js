@@ -44,7 +44,38 @@ export default function AdminBlogPage() {
         </Button>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile: card list */}
+      <div className="space-y-3 sm:hidden">
+        {articles.map((article) => (
+          <div key={article.id} className="border rounded-lg p-4 bg-white space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium truncate">{article.title}</p>
+                <p className="text-xs text-gray-400 truncate mt-0.5">{article.slug}</p>
+              </div>
+              <span className={`shrink-0 text-xs px-2 py-0.5 rounded ${article.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                {article.published ? 'Published' : 'Draft'}
+              </span>
+            </div>
+            <div className="flex gap-2 pt-1">
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/admin/blog/${article.id}`}>
+                  <Pencil size={14} className="mr-1" /> Edit
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" className="text-red-500 border-red-200" onClick={() => handleDelete(article.id)}>
+                <Trash2 size={14} className="mr-1" /> Delete
+              </Button>
+            </div>
+          </div>
+        ))}
+        {articles.length === 0 && (
+          <p className="text-gray-500 text-center py-8">Belum ada artikel.</p>
+        )}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden sm:block overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -58,7 +89,7 @@ export default function AdminBlogPage() {
             {articles.map((article) => (
               <TableRow key={article.id}>
                 <TableCell className="font-medium">{article.title}</TableCell>
-                <TableCell className="text-gray-500">/blog/{article.slug}</TableCell>
+                <TableCell className="text-gray-500 max-w-[200px] truncate">{article.slug}</TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-0.5 rounded ${article.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                     {article.published ? 'Published' : 'Draft'}
@@ -78,6 +109,11 @@ export default function AdminBlogPage() {
                 </TableCell>
               </TableRow>
             ))}
+            {articles.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-gray-500 py-8">Belum ada artikel.</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
