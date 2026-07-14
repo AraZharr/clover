@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const links = [
   { href: '/', label: 'Home' },
@@ -14,11 +14,29 @@ const links = [
 export default function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [siteTitle, setSiteTitle] = useState('AraZhar')
+  const [logo, setLogo] = useState('')
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((s) => {
+        if (s.site_title) setSiteTitle(s.site_title)
+        if (s.logo) setLogo(s.logo)
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
       <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-bold text-lg">AraZhar</Link>
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+          {logo ? (
+            <img src={logo} alt={siteTitle} className="h-8 w-auto" />
+          ) : (
+            siteTitle
+          )}
+        </Link>
 
         <button className="sm:hidden" onClick={() => setOpen(!open)}>
           <span className="text-2xl">{open ? '✕' : '☰'}</span>

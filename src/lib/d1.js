@@ -271,7 +271,38 @@ export async function deleteProject(id) {
   await db.prepare('DELETE FROM Project WHERE id = ?').bind(id).run()
 }
 
-// === Rate Limit ===
+// === Site Settings ===
+
+const DEFAULTS = {
+  site_title: 'AraZhar',
+  site_tagline: 'Developer & Creator',
+  logo: '',
+  og_image: '/api/og',
+  og_title: '',
+  meta_description: 'Portfolio pribadi AraZhar — Developer, kreator digital. Membangun solusi web, bot, dan automation yang berdampak.',
+  keywords: 'AraZhar,developer,portfolio,web developer,fullstack,Next.js,Telegram bot,automation,Indonesia',
+  canonical_url: 'https://arazhar.dev',
+  copyright_text: '© {year} AraZhar. All rights reserved.',
+}
+
+export async function getSettings() {
+  const db = getDB()
+  const { results } = await db.prepare('SELECT key, value FROM SiteSetting').all()
+  const stored = {}
+  for (const row of results) stored[row.key] = row.value
+  return { ...DEFAULTS, ...stored }
+}
+
+export async function upsertSettings(data) {
+  const db = getDB()
+  for (const [key, value] of Object.entries(data)) {
+    if (!(key in DEFAULTS)) continue
+    await db.prepare(
+      "INSERT INTO SiteSetting (key, value, updatedAt) VALUES (?, ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = datetime('now')"
+    ).bind(key, String(value ?? '')).run()
+  }
+  return getSettings()
+}
 
 export async function checkRateLimit(key, limit, windowSeconds) {
   const db = getDB()

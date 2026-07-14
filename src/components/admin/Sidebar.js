@@ -12,6 +12,7 @@ import {
   BarChart3,
   FolderKanban,
   Image,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -25,6 +26,7 @@ const links = [
   { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
   { href: '/admin/social', label: 'Social Links', icon: Share2 },
   { href: '/admin/media', label: 'Media', icon: Image },
+  { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function Sidebar() {

@@ -7,78 +7,81 @@ import { Toaster } from '@/components/ui/sonner'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
-const siteUrl = process.env.NEXT_PUBLIC_URL || 'https://arazhar.dev'
+export async function generateMetadata() {
+  const siteUrl = process.env.NEXT_PUBLIC_URL || 'https://arazhar.dev'
+  let settings = {}
+  try {
+    const d1 = await import('@/lib/d1')
+    settings = await d1.getSettings()
+  } catch {
+    // fallback — settings not available at build time
+  }
 
-export const metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'AraZhar — Developer & Creator',
-    template: '%s — AraZhar',
-  },
-  description:
-    'Portfolio pribadi AraZhar — Developer, kreator digital. Membangun solusi web, bot, dan automation yang berdampak.',
-  keywords: [
-    'AraZhar',
-    'developer',
-    'portfolio',
-    'web developer',
-    'fullstack',
-    'Next.js',
-    'Telegram bot',
-    'automation',
-    'Indonesia',
-  ],
-  authors: [{ name: 'AraZhar' }],
-  creator: 'AraZhar',
-  openGraph: {
-    type: 'website',
-    locale: 'id_ID',
-    url: siteUrl,
-    siteName: 'AraZhar Portfolio',
-    title: 'AraZhar — Developer & Creator',
-    description:
-      'Portfolio pribadi AraZhar — Developer, kreator digital. Membangun solusi web, bot, dan automation yang berdampak.',
-    images: [
-      {
-        url: '/api/og',
-        width: 1200,
-        height: 630,
-        alt: 'AraZhar Portfolio',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AraZhar — Developer & Creator',
-    description:
-      'Portfolio pribadi AraZhar — Developer, kreator digital.',
-    images: ['/api/og'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+  const siteTitle = settings.site_title || 'AraZhar'
+  const tagline = settings.site_tagline || 'Developer & Creator'
+  const defaultTitle = `${siteTitle} — ${tagline}`
+  const desc = settings.meta_description || 'Portfolio pribadi AraZhar — Developer, kreator digital.'
+  const ogImage = settings.og_image || '/api/og'
+  const canonical = settings.canonical_url || siteUrl
+  const keywords = settings.keywords || 'AraZhar,developer,portfolio'
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: defaultTitle,
+      template: `%s — ${siteTitle}`,
+    },
+    description: desc,
+    keywords: keywords.split(',').map((k) => k.trim()),
+    authors: [{ name: siteTitle }],
+    creator: siteTitle,
+    openGraph: {
+      type: 'website',
+      locale: 'id_ID',
+      url: siteUrl,
+      siteName: `${siteTitle} Portfolio`,
+      title: settings.og_title || defaultTitle,
+      description: desc,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${siteTitle} Portfolio` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: settings.og_title || defaultTitle,
+      description: desc,
+      images: [ogImage],
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
+    alternates: { canonical },
+  }
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const siteUrl = process.env.NEXT_PUBLIC_URL || 'https://arazhar.dev'
+  let settings = {}
+  try {
+    const d1 = await import('@/lib/d1')
+    settings = await d1.getSettings()
+  } catch {}
+
+  const siteTitle = settings.site_title || 'AraZhar'
+  const tagline = settings.site_tagline || 'Developer & Creator'
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: 'AraZhar',
+    name: siteTitle,
     url: siteUrl,
-    jobTitle: 'Developer & Creator',
-    description:
-      'Portfolio pribadi AraZhar — Developer, kreator digital. Membangun solusi web, bot, dan automation.',
+    jobTitle: tagline,
+    description: settings.meta_description || 'Portfolio pribadi AraZhar — Developer, kreator digital.',
     sameAs: ['https://github.com/AraZhar'],
   }
 
