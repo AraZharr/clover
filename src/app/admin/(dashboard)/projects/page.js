@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2, Eye, EyeOff, GripVertical, Image as ImageIcon } from 'lucide-react'
+import { Plus, Trash2, Eye, EyeOff, GripVertical, Image as ImageIcon, Upload } from 'lucide-react'
 import ImagePicker from '@/components/admin/ImagePicker'
+import { toast } from 'sonner'
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([])
@@ -11,9 +12,25 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState(null)
   const [showImgPicker, setShowImgPicker] = useState(false)
+  const uploadRef = useRef(null)
   const [form, setForm] = useState({ title: '', description: '', tech: '', link: '', image: '', sort_order: 0, visible: true })
 
   useEffect(() => { fetchProjects() }, [])
+
+  async function handleUpload(file) {
+    if (!file) return
+    const fd = new FormData()
+    fd.append('file', file)
+    try {
+      const res = await fetch('/api/admin/media', { method: 'POST', body: fd })
+      if (!res.ok) { toast.error('Upload failed'); return }
+      const data = await res.json()
+      setForm((prev) => ({ ...prev, image: data.url }))
+      toast.success('Uploaded')
+    } catch {
+      toast.error('Upload error')
+    }
+  }
 
   async function fetchProjects() {
     const res = await fetch('/api/admin/projects')
@@ -142,6 +159,16 @@ export default function ProjectsPage() {
                   placeholder="/api/admin/media/..."
                   className="flex-1 w-full text-sm border rounded-lg px-3 py-2 outline-none focus:border-black"
                 />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                  className="hidden"
+                  ref={uploadRef}
+                  onChange={(e) => { handleUpload(e.target.files?.[0]); if (e.target) e.target.value = '' }}
+                />
+                <Button type="button" variant="outline" size="sm" onClick={() => uploadRef.current?.click()}>
+                  <Upload size={14} />
+                </Button>
                 <Button type="button" variant="outline" size="sm" onClick={() => setShowImgPicker(true)}>
                   <ImageIcon size={14} />
                 </Button>

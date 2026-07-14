@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon, Upload } from 'lucide-react'
 import ImagePicker from '@/components/admin/ImagePicker'
 import { toast } from 'sonner'
 
@@ -25,6 +25,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [imgPickerTarget, setImgPickerTarget] = useState(null)
+  const uploadRef = useRef({})
 
   useEffect(() => {
     fetch('/api/admin/settings')
@@ -32,6 +33,22 @@ export default function SettingsPage() {
       .then((data) => { setSettings(data); setLoading(false) })
       .catch(() => { setSettings({}); setLoading(false) })
   }, [])
+
+  async function handleUpload(key, file) {
+    if (!file) return
+    const fd = new FormData()
+    fd.append('file', file)
+
+    try {
+      const res = await fetch('/api/admin/media', { method: 'POST', body: fd })
+      if (!res.ok) { toast.error('Upload failed'); return }
+      const data = await res.json()
+      set(key, data.url)
+      toast.success('Uploaded')
+    } catch {
+      toast.error('Upload error')
+    }
+  }
 
   function set(key, value) {
     setSettings((prev) => ({ ...prev, [key]: value }))
@@ -67,6 +84,16 @@ export default function SettingsPage() {
           <Label>{field.label}</Label>
           <div className="flex gap-2">
             <Input value={val} onChange={(e) => set(field.key, e.target.value)} placeholder={`/${field.key === 'logo' ? 'api/admin/media/...' : 'api/og'}`} className="flex-1" />
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+              className="hidden"
+              ref={(el) => { uploadRef.current[field.key] = el }}
+              onChange={(e) => { handleUpload(field.key, e.target.files?.[0]); if (e.target) e.target.value = '' }}
+            />
+            <Button type="button" variant="outline" size="sm" onClick={() => uploadRef.current[field.key]?.click()}>
+              <Upload size={14} />
+            </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => setImgPickerTarget(field.key)}>
               <ImageIcon size={14} />
             </Button>
