@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import * as d1 from '@/lib/d1'
 
-export const runtime = 'edge'
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY
 const GROQ_KEY = process.env.GROQ_API_KEY

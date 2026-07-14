@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import * as d1 from '@/lib/d1'
 
-export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export async function GET(req, { params }) {

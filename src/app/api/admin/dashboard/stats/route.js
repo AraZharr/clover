@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-cf'
 import * as d1 from '@/lib/d1'
 
-export const runtime = 'edge'
 
 export async function GET() {
   const session = await getSession()

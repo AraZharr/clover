@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import * as d1 from '@/lib/d1'
 import { createSessionToken } from '@/lib/auth-cf'
 
-export const runtime = 'edge'
 
 export async function POST(req) {
   try {
