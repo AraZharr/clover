@@ -12,7 +12,7 @@ export async function POST(req) {
     }
 
     // Turnstile verification (gratis, skip kalau belum dikonfigurasi)
-    if (process.env.TURNSTILE_SECRET_KEY) {
+    if (process.env.TURNSTILE_SECRET_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
       if (!turnstileToken) {
         return NextResponse.json({ error: 'CAPTCHA wajib diisi' }, { status: 400 })
       }
