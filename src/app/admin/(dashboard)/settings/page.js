@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Image as ImageIcon, Upload } from 'lucide-react'
 import ImagePicker from '@/components/admin/ImagePicker'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 
 const FIELDS = [
   { key: 'site_title', label: 'Site Title', type: 'text', section: 'brand' },
@@ -36,6 +37,7 @@ export default function SettingsPage() {
 
   async function handleUpload(key, file) {
     if (!file) return
+    file = await compressImage(file)
     const fd = new FormData()
     fd.append('file', file)
 

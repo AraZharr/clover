@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, Trash2, Eye, EyeOff, GripVertical, Image as ImageIcon, Upload } from 'lucide-react'
 import ImagePicker from '@/components/admin/ImagePicker'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([])
@@ -19,6 +20,7 @@ export default function ProjectsPage() {
 
   async function handleUpload(file) {
     if (!file) return
+    file = await compressImage(file)
     const fd = new FormData()
     fd.append('file', file)
     try {

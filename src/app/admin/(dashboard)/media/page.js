@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Trash2, Copy, Upload, ExternalLink, FileImage } from 'lucide-react'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 
 const FORMAT_BADGES = {
   'image/jpeg': { label: 'JPEG', color: 'bg-blue-50 text-blue-700' },
@@ -38,12 +39,14 @@ export default function MediaPage() {
     setUploading(true)
 
     let ok = 0, fail = 0
-    for (const file of files) {
+    for (const raw of files) {
+      let file = raw
       if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'].includes(file.type)) {
         toast.error(`${file.name}: format not supported`)
         fail++
         continue
       }
+      file = await compressImage(file)
       if (file.size > 10 * 1024 * 1024) {
         toast.error(`${file.name}: max 10MB`)
         fail++

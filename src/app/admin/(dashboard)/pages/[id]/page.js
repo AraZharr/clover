@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Image as ImageIcon, Upload } from 'lucide-react'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 import ImagePicker from '@/components/admin/ImagePicker'
 
 export default function EditPage({ params }) {
@@ -24,6 +25,7 @@ export default function EditPage({ params }) {
 
   async function handleUpload(file) {
     if (!file) return
+    file = await compressImage(file)
     const fd = new FormData()
     fd.append('file', file)
     try {

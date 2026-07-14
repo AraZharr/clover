@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, Upload, Check, FileImage } from 'lucide-react'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 
 export default function ImagePicker({ open, onClose, onSelect }) {
   const [images, setImages] = useState([])
@@ -25,8 +26,9 @@ export default function ImagePicker({ open, onClose, onSelect }) {
   useEffect(() => { fetchImages() }, [fetchImages])
 
   async function handleUpload(e) {
-    const file = e.target.files?.[0]
+    let file = e.target.files?.[0]
     if (!file) return
+    file = await compressImage(file)
 
     const fd = new FormData()
     fd.append('file', file)

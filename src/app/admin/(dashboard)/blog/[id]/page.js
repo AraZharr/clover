@@ -9,6 +9,7 @@ import { Image as ImageIcon, Upload } from 'lucide-react'
 import TipTapEditor from '@/components/admin/TipTapEditor'
 import ImagePicker from '@/components/admin/ImagePicker'
 import { toast } from 'sonner'
+import { compressImage } from '@/lib/compress-image'
 
 export default function EditArticle({ params }) {
   const { id } = use(params)
@@ -25,6 +26,7 @@ export default function EditArticle({ params }) {
 
   async function handleUpload(file) {
     if (!file) return
+    file = await compressImage(file)
     const fd = new FormData()
     fd.append('file', file)
     try {
