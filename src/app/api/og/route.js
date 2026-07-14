@@ -3,8 +3,8 @@
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_URL || 'https://clover.azhr.workers.dev'
-  const title = 'AraZhar'
-  const tagline = 'Developer & Creator'
+  const title = process.env.NEXT_PUBLIC_OG_TITLE || 'AraZhar'
+  const tagline = process.env.NEXT_PUBLIC_OG_TAGLINE || 'Developer & Creator'
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
