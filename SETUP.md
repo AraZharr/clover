@@ -147,10 +147,10 @@ Ini akan membuat tabel: User, Page, BlogArticle, SocialLink, Skill, Project, Rat
 Jalankan perintah ini (ganti email dan password sesuai keinginan kamu):
 
 ```bash
-wrangler d1 execute clover-db --remote --command="INSERT INTO User (id, email, password, name) VALUES (lower(hex(randomblob(16))), 'admin@arazhar.dev', 'password123', 'AraZhar')"
+wrangler d1 execute clover-db --remote --command="INSERT INTO User (id, email, password, name) VALUES (lower(hex(randomblob(16))), 'admin@example.com', 'password123', 'AraZhar')"
 ```
 
-- Email: `admin@arazhar.dev` (atau ganti)
+- Email: `admin@example.com` (atau ganti)
 - Password: `password123` (atau ganti)
 - Nama: `AraZhar`
 
@@ -179,7 +179,7 @@ GROQ_MODEL="llama-3.3-70b-versatile"
 NEXT_PUBLIC_WA_NUMBER="628xxxxxxxxxx"
 
 # === DOMAIN ===
-NEXT_PUBLIC_URL="https://arazhar.dev"
+NEXT_PUBLIC_URL="https://clover.azhr.workers.dev"
 ```
 
 ### Penjelasan tiap variabel:
@@ -190,7 +190,7 @@ NEXT_PUBLIC_URL="https://arazhar.dev"
 | `GEMINI_API_KEY` | API key Google Gemini | https://aistudio.google.com/apikey (klik "Create API Key") |
 | `GROQ_API_KEY` | API key Groq | https://console.groq.com/keys (daftar → buat key) |
 | `NEXT_PUBLIC_WA_NUMBER` | Nomor WhatsApp tanpa + | Contoh: `6281234567890` (62 = kode Indonesia) |
-| `NEXT_PUBLIC_URL` | Domain website kamu | Isi dulu dengan `https://arazhar.dev`, ganti nanti kalau domain berubah |
+| `NEXT_PUBLIC_URL` | Domain website kamu | Isi dulu dengan `https://clover.azhr.workers.dev`, ganti nanti kalau domain berubah |
 
 ### Generate JWT_SECRET:
 
@@ -262,7 +262,7 @@ Beberapa variabel environment harus di-set langsung di Cloudflare (karena `.env`
 | `GEMINI_API_KEY` | (nilai dari .env) | Encrypted |
 | `GROQ_API_KEY` | (nilai dari .env) | Encrypted |
 | `NEXT_PUBLIC_WA_NUMBER` | (nilai dari .env) | Plaintext |
-| `NEXT_PUBLIC_URL` | https://arazhar.dev | Plaintext |
+| `NEXT_PUBLIC_URL` | https://clover.azhr.workers.dev | Plaintext |
 | `GEMINI_MODEL` | gemini-2.0-flash | Plaintext |
 | `GROQ_MODEL` | llama-3.3-70b-versatile | Plaintext |
 
@@ -355,13 +355,13 @@ Kamu akan melihat:
 
 ## STEP 16: Custom Domain (Opsional)
 
-Kalau kamu punya domain sendiri (contoh: `arazhar.dev`):
+Kalau kamu punya domain sendiri (contoh: `example.com`):
 
 1. Buka https://dash.cloudflare.com
 2. Klik **Workers & Pages** → pilih worker `clover`
 3. Klik tab **Triggers**
 4. Klik **Add Custom Domain**
-5. Isi domain (contoh: `arazhar.dev`)
+5. Isi domain (contoh: `example.com`)
 6. Ikuti instruksi DNS yang diberikan
 
 **Catatan:** Domain harus menggunakan Cloudflare sebagai DNS provider.
@@ -459,7 +459,7 @@ wrangler d1 execute clover-db --remote --file=./migrations/0003_skill_project.sq
 wrangler d1 execute clover-db --remote --file=./migrations/0004_ratelimit.sql
 
 # 6. Buat admin user
-wrangler d1 execute clover-db --remote --command="INSERT INTO User (id, email, password, name) VALUES (lower(hex(randomblob(16))), 'admin@arazhar.dev', 'password123', 'AraZhar')"
+wrangler d1 execute clover-db --remote --command="INSERT INTO User (id, email, password, name) VALUES (lower(hex(randomblob(16))), 'admin@example.com', 'password123', 'AraZhar')"
 
 # 7. Isi .env
 # JWT_SECRET, GEMINI_API_KEY, GROQ_API_KEY, NEXT_PUBLIC_WA_NUMBER, NEXT_PUBLIC_URL

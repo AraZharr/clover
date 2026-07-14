@@ -2,7 +2,7 @@
 
 > Portfolio pribadi AraZhar — Developer & kreator digital Indonesia. Membangun solusi web, bot, dan automation yang berdampak.
 
-[![Website](https://img.shields.io/badge/🌐-arazhar.dev-black)](https://arazhar.dev)
+[![Website](https://img.shields.io/badge/🌐-clover.azhr.workers.dev-black)](https://clover.azhr.workers.dev)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
@@ -255,7 +255,7 @@ Buka [http://localhost:3000](http://localhost:3000) di browser.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `NEXT_PUBLIC_URL` | Yes | `https://arazhar.dev` | Base URL website |
+| `NEXT_PUBLIC_URL` | Yes | `https://clover.azhr.workers.dev` | Base URL website |
 | `NEXT_PUBLIC_WA_NUMBER` | No | — | WhatsApp number (format: `628xxx`) |
 | `GEMINI_API_KEY` | Yes | — | Google Gemini API key |
 | `GROQ_API_KEY` | Yes | — | Groq API key |
