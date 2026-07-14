@@ -37,7 +37,8 @@ export default function AdminPagesPage() {
       {pages.length === 0 ? (
         <p className="text-gray-500">Belum ada page. Klik &quot;New Page&quot; untuk membuat.</p>
       ) : (
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
@@ -67,6 +68,7 @@ export default function AdminPagesPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   )
