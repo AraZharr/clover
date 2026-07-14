@@ -18,8 +18,7 @@
     {
       "binding": "DB",
       "database_name": "clover-db",
-      // Isi database_id setelah create D1: wrangler d1 create clover-db
-      "database_id": ""
+      "database_id": "c19b5005-10aa-4084-a168-2a165f935f4e"
     }
   ]
 }
