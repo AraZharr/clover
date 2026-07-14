@@ -26,7 +26,7 @@ export default function EditCV({ params }) {
         const d = cv.data || {}
         setForm({
           title: cv.title, slug: cv.slug, published: cv.published,
-          photo: d.photo || '', location: d.location || '', email: d.email || '', bio: d.bio || '',
+          photo: d.photo || '', location: d.location || '', email: d.email || '', phone: d.phone || '', website: d.website || '', bio: d.bio || '',
           skills: d.skills || [],
           experience: d.experience || [],
           education: d.education || [],
@@ -91,6 +91,8 @@ export default function EditCV({ params }) {
             photo: form.photo,
             location: form.location,
             email: form.email,
+            phone: form.phone,
+            website: form.website,
             bio: form.bio,
             skills: form.skills,
             experience: form.experience,
@@ -160,6 +162,17 @@ export default function EditCV({ params }) {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" value={form.email} onChange={(e) => setData('email', e.target.value)} />
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input id="phone" value={form.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="+62 856..." />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="website">Website</Label>
+              <Input id="website" value={form.website} onChange={(e) => setData('website', e.target.value)} placeholder="https://..." />
             </div>
           </div>
 
