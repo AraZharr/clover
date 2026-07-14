@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2, Eye, EyeOff, GripVertical } from 'lucide-react'
+import { Plus, Trash2, Eye, EyeOff, GripVertical, Image as ImageIcon } from 'lucide-react'
+import ImagePicker from '@/components/admin/ImagePicker'
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState(null)
+  const [showImgPicker, setShowImgPicker] = useState(false)
   const [form, setForm] = useState({ title: '', description: '', tech: '', link: '', image: '', sort_order: 0, visible: true })
 
   useEffect(() => { fetchProjects() }, [])
@@ -132,13 +134,21 @@ export default function ProjectsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Image URL (opsional)</label>
-              <input
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="https://..."
-                className="w-full text-sm border rounded-lg px-3 py-2 outline-none focus:border-black"
-              />
+              <label className="text-sm font-medium">Image (opsional)</label>
+              <div className="flex gap-2">
+                <input
+                  value={form.image}
+                  onChange={(e) => setForm({ ...form, image: e.target.value })}
+                  placeholder="/api/admin/media/..."
+                  className="flex-1 w-full text-sm border rounded-lg px-3 py-2 outline-none focus:border-black"
+                />
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowImgPicker(true)}>
+                  <ImageIcon size={14} />
+                </Button>
+              </div>
+              {form.image && (
+                <img src={form.image} alt="" className="mt-1 max-h-20 rounded border object-contain bg-gray-50" />
+              )}
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -169,6 +179,8 @@ export default function ProjectsPage() {
           </div>
         </form>
       )}
+
+      <ImagePicker open={showImgPicker} onClose={() => setShowImgPicker(false)} onSelect={(url) => setForm({ ...form, image: url })} />
 
       {loading ? (
         <p className="text-gray-500">Loading...</p>
