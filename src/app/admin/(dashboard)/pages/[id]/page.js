@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Image as ImageIcon, Upload } from 'lucide-react'
+import TipTapEditor from '@/components/admin/TipTapEditor'
 import { toast } from 'sonner'
 import { compressImage } from '@/lib/compress-image'
 import ImagePicker from '@/components/admin/ImagePicker'
@@ -16,9 +17,10 @@ export default function EditPage({ params }) {
   const isNew = id === 'new'
 
   const [form, setForm] = useState({
-    title: '', slug: '', content: '{}', published: true,
+    title: '', slug: '', published: true,
     meta_title: '', meta_description: '', og_image: '', keywords: '', noindex: false,
   })
+  const [content, setContent] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showImgPicker, setShowImgPicker] = useState(false)
   const uploadRef = useRef(null)
@@ -47,7 +49,6 @@ export default function EditPage({ params }) {
           setForm({
             title: data.title,
             slug: data.slug,
-            content: JSON.stringify(data.content, null, 2),
             published: data.published,
             meta_title: data.meta_title || '',
             meta_description: data.meta_description || '',
@@ -55,33 +56,31 @@ export default function EditPage({ params }) {
             keywords: data.keywords || '',
             noindex: !!data.noindex,
           })
+          setContent(data.content)
         })
     }
   }, [id, isNew])
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (!content) return toast.error('Content cannot be empty')
     setLoading(true)
 
     try {
-      let parsedContent
-      try { parsedContent = JSON.parse(form.content) } catch { parsedContent = {} }
-
-      const payload = { ...form, content: parsedContent }
-      delete payload.content
+      const payload = { ...form, content }
 
       if (isNew) {
         await fetch('/api/admin/pages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...form, content: parsedContent }),
+          body: JSON.stringify(payload),
         })
         toast.success('Page created')
       } else {
         await fetch(`/api/admin/pages/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...form, content: parsedContent }),
+          body: JSON.stringify(payload),
         })
         toast.success('Page updated')
       }
@@ -111,14 +110,8 @@ export default function EditPage({ params }) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="content">Content (JSON)</Label>
-          <textarea
-            id="content"
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            rows={10}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-black transition-colors"
-          />
+          <Label>Content</Label>
+          <TipTapEditor content={content} onChange={setContent} />
         </div>
 
         <label className="flex items-center gap-2 text-sm">
