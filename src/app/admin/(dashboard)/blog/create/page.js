@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon, Upload } from 'lucide-react'
 import TipTapEditor from '@/components/admin/TipTapEditor'
 import ImagePicker from '@/components/admin/ImagePicker'
 import { toast } from 'sonner'
@@ -19,6 +19,22 @@ export default function CreateArticle() {
   const [content, setContent] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showImgPicker, setShowImgPicker] = useState(false)
+  const uploadRef = useRef(null)
+
+  async function handleUpload(file) {
+    if (!file) return
+    const fd = new FormData()
+    fd.append('file', file)
+    try {
+      const res = await fetch('/api/admin/media', { method: 'POST', body: fd })
+      if (!res.ok) { toast.error('Upload failed'); return }
+      const data = await res.json()
+      setForm((prev) => ({ ...prev, og_image: data.url }))
+      toast.success('Uploaded')
+    } catch {
+      toast.error('Upload error')
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -100,6 +116,16 @@ export default function CreateArticle() {
             <Label>OG Image</Label>
             <div className="flex gap-2">
               <Input value={form.og_image} onChange={(e) => setForm({ ...form, og_image: e.target.value })} placeholder="/api/admin/media/..." className="flex-1" />
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                className="hidden"
+                ref={uploadRef}
+                onChange={(e) => { handleUpload(e.target.files?.[0]); if (e.target) e.target.value = '' }}
+              />
+              <Button type="button" variant="outline" onClick={() => uploadRef.current?.click()}>
+                <Upload size={16} />
+              </Button>
               <Button type="button" variant="outline" onClick={() => setShowImgPicker(true)}>
                 <ImageIcon size={16} />
               </Button>
