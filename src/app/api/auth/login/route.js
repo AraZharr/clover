@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import * as d1 from '@/lib/d1'
-import { createSessionToken } from '@/lib/auth-cf'
-
 
 export async function POST(req) {
   try {
@@ -11,7 +9,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Email dan password wajib diisi' }, { status: 400 })
     }
 
-    // Turnstile verification (gratis, skip kalau belum dikonfigurasi)
+    // Turnstile verification
     if (process.env.TURNSTILE_SECRET_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
       if (!turnstileToken) {
         return NextResponse.json({ error: 'CAPTCHA wajib diisi' }, { status: 400 })
@@ -32,10 +30,12 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Email atau password salah' }, { status: 401 })
     }
 
-    const sessionToken = await createSessionToken({ id: user.id, email: user.email, name: user.name })
+    // Create session directly (inline)
+    const sid = crypto.randomUUID()
+    await d1.createSession(sid, { userId: user.id, email: user.email, name: user.name })
 
     const res = NextResponse.json({ success: true })
-    res.cookies.set('session', sessionToken, {
+    res.cookies.set('session', sid, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
