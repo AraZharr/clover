@@ -1,9 +1,4 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare'
-
-function getDB() {
-  const { env } = getCloudflareContext()
-  return env.DB
-}
+import { getDB } from '@/lib/db-client'
 
 function safeJson(val) {
   if (!val) return {}

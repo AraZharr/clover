@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-cf'
-import { getCloudflareContext } from '@opennextjs/cloudflare'
+import { getObject, headObject, putObject } from '@/lib/r2'
 
 export async function GET(req, { params }) {
   const { key } = await params
 
   try {
-    const { env } = getCloudflareContext()
-    const object = await env.IMAGES.get(key)
+    const object = await getObject(key)
     if (!object) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
     const headers = new Headers()
-    object.writeHttpMetadata(headers)
+    headers.set('Content-Type', object.contentType)
     headers.set('Cache-Control', 'public, max-age=31536000, immutable')
 
     return new NextResponse(object.body, {
@@ -34,20 +33,17 @@ export async function PUT(req, { params }) {
     const { originalName } = body
     if (!originalName) return NextResponse.json({ error: 'originalName required' }, { status: 400 })
 
-    const { env } = getCloudflareContext()
-
-    // Get existing object + head to preserve metadata
-    const object = await env.IMAGES.get(key)
+    const object = await getObject(key)
     if (!object) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-    const head = await env.IMAGES.head(key)
+    const head = await headObject(key)
     const existingMeta = head?.customMetadata || {}
-    const contentType = head?.httpMetadata?.contentType || 'image/jpeg'
+    const contentType = head?.contentType || 'image/jpeg'
 
     // Re-upload with updated originalName
-    const buffer = await object.arrayBuffer()
-    await env.IMAGES.put(key, buffer, {
-      httpMetadata: { contentType },
+    const buffer = await new Response(object.body).arrayBuffer()
+    await putObject(key, buffer, {
+      contentType,
       customMetadata: {
         ...existingMeta,
         originalName,
