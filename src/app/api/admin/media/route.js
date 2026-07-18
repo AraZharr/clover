@@ -1,29 +1,38 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-cf'
-import { listObjects, headObject, putObject, deleteObject } from '@/lib/r2'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
 const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+const TYPE_LABELS = {
+  'image/jpeg': 'JPEG',
+  'image/png': 'PNG',
+  'image/webp': 'WebP',
+  'image/gif': 'GIF',
+  'image/avif': 'AVIF',
+}
 
 export async function GET() {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const objects = await listObjects()
+    const { env } = getCloudflareContext()
+    const objects = await env.IMAGES.list()
 
     const images = []
-    for (const o of objects) {
+    for (const o of objects.objects) {
       if (o.key === '') continue
 
+      // Fetch metadata per object via head
       let width = 0, height = 0, mimeType = '', originalName = ''
       try {
-        const head = await headObject(o.key)
+        const head = await env.IMAGES.head(o.key)
         if (head) {
-          mimeType = head.contentType
-          originalName = head.customMetadata.originalName || o.key
-          width = parseInt(head.customMetadata.width || '0')
-          height = parseInt(head.customMetadata.height || '0')
+          mimeType = head.httpMetadata?.contentType || ''
+          originalName = head.customMetadata?.originalName || o.key
+          width = parseInt(head.customMetadata?.width || '0')
+          height = parseInt(head.customMetadata?.height || '0')
         }
       } catch {}
 
@@ -77,9 +86,10 @@ export async function POST(req) {
 
     const ext = file.name.split('.').pop()
     const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { env } = getCloudflareContext()
 
-    await putObject(uniqueName, buffer, {
-      contentType: file.type,
+    await env.IMAGES.put(uniqueName, buffer, {
+      httpMetadata: { contentType: file.type },
       customMetadata: {
         originalName: file.name,
         width: String(width),
@@ -108,7 +118,8 @@ export async function DELETE(req) {
     const { key } = await req.json()
     if (!key) return NextResponse.json({ error: 'No key provided' }, { status: 400 })
 
-    await deleteObject(key)
+    const { env } = getCloudflareContext()
+    await env.IMAGES.delete(key)
     return NextResponse.json({ success: true })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
